@@ -28,6 +28,10 @@ public class DesignatorSettings : ModSettings
 
     public bool EnableRotationKeys = false;
 
+    public DesignatorSelectionCache UserDefaultShapes = new UserDefaultShapesConfig();
+
+    public DesignatorSelectionCache CachedShapes = new UserDefaultShapesConfig();
+
     public override void ExposeData()
     {
         base.ExposeData();
@@ -57,5 +61,17 @@ public class DesignatorSettings : ModSettings
                 Keys.Add(KeySettings.DefaultKeys[i - 1]);
 
         DesignatorShapes.ShapeControls = new Ui.ShapeControlsWindow(WindowX, WindowY, IconSize);
+
+        Scribe_Deep.Look(ref UserDefaultShapes, nameof(UserDefaultShapes));
+        Scribe_Deep.Look(ref CachedShapes, nameof(CachedShapes));
+
+        if (CachedShapes == null)
+        {
+            CachedShapes = new UserDefaultShapesConfig();
+        }
+        if (UserDefaultShapes == null)
+        {
+            UserDefaultShapes = new UserDefaultShapesConfig();
+        }
     }
 }

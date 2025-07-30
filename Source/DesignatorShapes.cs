@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Merthsoft.DesignatorShapes.Defs;
 using Merthsoft.DesignatorShapes.Shapes;
 using Merthsoft.DesignatorShapes.Ui;
@@ -207,6 +207,16 @@ public class DesignatorShapes : Mod
                 TradeBeaconRadius = (float)tradeRadiusInfo.GetValue(null);
 
             ShapeControls = new ShapeControlsWindow(Settings?.WindowX ?? 0, Settings?.WindowY ?? 0, Settings?.IconSize ?? 40);
+            
+            // Initialize default shapes now that defs are loaded
+            if (Settings.UserDefaultShapes is UserDefaultShapesConfig userDefaults)
+            {
+                userDefaults.Initialize();
+            }
+            if (Settings.CachedShapes is UserDefaultShapesConfig cachedShapes)
+            {
+                cachedShapes.Initialize();
+            }
         }
     }
 
@@ -258,5 +268,19 @@ public class DesignatorShapes : Mod
 
         if (def.pauseOnSelection && Settings.PauseOnFloodFillSelect)
             Find.TickManager.CurTimeSpeed = TimeSpeed.Paused;
+
+        var selectedDesignator = Patches.DesignatorManager_Select.SelectedDesignator;
+        if (selectedDesignator == null)
+        {
+            // Log.Warning("DesignatorManager_Select: Selected designator is null");
+        }
+        if (Settings.CachedShapes == null)
+        {
+            // Log.Warning("DesignatorManager_Select: Settings.CachedShapes is null");
+        }
+        else
+        {
+            Settings.CachedShapes.SetShape(selectedDesignator.GetType().FullName, def);
+        }
     }
 }
